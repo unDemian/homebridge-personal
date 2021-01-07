@@ -1,15 +1,21 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "DemianHub",
   "pluginType": "platform",
   "singular": true,
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
-        "title": "Name",
+      "port": {
+        "title": "Harmony Hub Port",
+        "type": "integer",
+        "required": true,
+        "default": "61991"
+      },
+      "accessList": {
+        "title": "Allowed Accessories",
         "type": "string",
         "required": true,
-        "default": "Example Dynamic Platform"
+        "default": "LED Strip"
       }
     }
   }

@@ -1,16 +1,16 @@
 {
-  "private": true,
-  "displayName": "Plugin Name",
-  "name": "homebridge-plugin-name",
+  "private": false,
+  "displayName": "Demian Personal Homebridge Plugin",
+  "name": "@unDemian/homebridge-personal",
   "version": "1.0.0",
   "description": "A short description about what your plugin does.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "https://github.com/unDemian/homebridge-personal"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/unDemian/homebridge-persona/issues"
   },
   "engines": {
     "node": ">=10.17.0",
@@ -26,7 +26,11 @@
   "keywords": [
     "homebridge-plugin"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "harmony-websocket": "git+ssh://git@github.com/unDemian/harmony-websocket.git",
+    "harmonyhubjs-discover": "^1.1.1",
+    "node-persist": "^3.1.0"
+  },
   "devDependencies": {
     "@types/node": "^14.14.6",
     "@typescript-eslint/eslint-plugin": "^4.6.1",

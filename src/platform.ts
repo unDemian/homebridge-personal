@@ -1,23 +1,44 @@
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
+/**
+ * External dependencies
+ */
+import { API, APIEvent, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
+import HarmonyHubDiscover from 'harmonyhubjs-discover';
+import HarmonyWebSocket from 'harmony-websocket';
+import storage from 'node-persist';
 
+/**
+ * Internal dependencies
+ */
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
-import { ExamplePlatformAccessory } from './platformAccessory';
+import { LedStripAccessory } from './led-strip-accessory';
+
+
+/**
+ * Types
+ */
+interface Config extends PlatformConfig {
+  port: number;
+  accessList: string;
+}
 
 /**
  * HomebridgePlatform
  * This class is the main constructor for your plugin, this is where you should
  * parse the user config and discover/register accessories with Homebridge.
  */
-export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
+export class Platform implements DynamicPlatformPlugin {
   public readonly Service: typeof Service = this.api.hap.Service;
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
+
+  public ws;
+  public storage;
 
   // this is used to track restored cached accessories
   public readonly accessories: PlatformAccessory[] = [];
 
   constructor(
     public readonly log: Logger,
-    public readonly config: PlatformConfig,
+    public readonly config: Config,
     public readonly api: API,
   ) {
     this.log.debug('Finished initializing platform:', this.config.name);
@@ -26,9 +47,10 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
     // Dynamic Platform plugins should only register new accessories after this event was fired,
     // in order to ensure they weren't added to homebridge already. This event can also be used
     // to start discovery of new accessories.
-    this.api.on('didFinishLaunching', () => {
+    this.api.on(APIEvent.DID_FINISH_LAUNCHING, () => {
       log.debug('Executed didFinishLaunching callback');
       // run the method to discover / register your devices as accessories
+      this.setup();
       this.discoverDevices();
     });
   }
@@ -44,34 +66,31 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
     this.accessories.push(accessory);
   }
 
-  /**
-   * This is an example method showing how to register discovered accessories.
-   * Accessories must only be registered once, previously created accessories
-   * must not be registered again to prevent "duplicate UUID" errors.
-   */
-  discoverDevices() {
+  setup = () => {
+    storage.init().catch(e => this.log.error(e.message));
+    this.ws = new HarmonyWebSocket();
+    this.storage = storage;
+  };
 
-    // EXAMPLE ONLY
-    // A real plugin you would discover accessories from the local network, cloud services
-    // or a user-defined array in the platform config.
-    const exampleDevices = [
-      {
-        exampleUniqueId: 'ABCD',
-        exampleDisplayName: 'Bedroom',
-      },
-      {
-        exampleUniqueId: 'EFGH',
-        exampleDisplayName: 'Kitchen',
-      },
-    ];
+  devicesDiscovered = ( devices ) => {
+    this.log.info('Devices discovered');
+
+    if ( ! this.config.accessList ) {
+      return this.log.error('accessList parameter is missing');
+    }
+
+    const accessList = this.config.accessList.split(',');
 
     // loop over the discovered devices and register each one if it has not already been registered
-    for (const device of exampleDevices) {
+    for (const device of devices) {
+      if ( ! accessList.includes( device.label ) ) {
+        continue;
+      }
 
       // generate a unique id for the accessory this should be generated from
       // something globally unique, but constant, for example, the device serial
       // number or MAC address
-      const uuid = this.api.hap.uuid.generate(device.exampleUniqueId);
+      const uuid = this.api.hap.uuid.generate(device.id);
 
       // see if an accessory with the same uuid has already been registered and restored from
       // the cached devices we stored in the `configureAccessory` method above
@@ -86,10 +105,12 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
           // existingAccessory.context.device = device;
           // this.api.updatePlatformAccessories([existingAccessory]);
 
-          // create the accessory handler for the restored accessory
-          // this is imported from `platformAccessory.ts`
-          new ExamplePlatformAccessory(this, existingAccessory);
-          
+          switch( device.type ) {
+            case 'LightController':
+              new LedStripAccessory(this, existingAccessory);
+              break;
+          }
+
           // update accessory cache with any changes to the accessory details and information
           this.api.updatePlatformAccessories([existingAccessory]);
         } else if (!device) {
@@ -100,22 +121,43 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         }
       } else {
         // the accessory does not yet exist, so we need to create it
-        this.log.info('Adding new accessory:', device.exampleDisplayName);
+        this.log.info('Adding new accessory:', device.label);
 
         // create a new accessory
-        const accessory = new this.api.platformAccessory(device.exampleDisplayName, uuid);
+        const accessory = new this.api.platformAccessory(device.label, uuid);
 
         // store a copy of the device object in the `accessory.context`
         // the `context` property can be used to store any data about the accessory you may need
         accessory.context.device = device;
 
-        // create the accessory handler for the newly create accessory
-        // this is imported from `platformAccessory.ts`
-        new ExamplePlatformAccessory(this, accessory);
+        switch( device.type ) {
+          case 'LightController':
+            new LedStripAccessory(this, accessory);
+            break;
+        }
 
         // link the accessory to your platform
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       }
     }
+  };
+
+  hubDiscovered = ( hub ) => {
+    this.log.info('Hub discovered');
+    this.ws.connect(hub.ip)
+      .then(() => this.ws.getDevices())
+      .then(this.devicesDiscovered)
+      .catch(e => this.log.error(e.message));
+  };
+
+  discoverDevices() {
+    if ( ! this.config.port ) {
+      return this.log.error('port parameter is missing');
+    }
+
+    const discover = new HarmonyHubDiscover(this.config.port);
+
+    discover.on('online', this.hubDiscovered);
+    discover.start();
   }
 }
