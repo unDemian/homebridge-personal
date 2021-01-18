@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "harmony-websocket": "git+https://github.com/unDemian/harmony-websocket.git",
-    "harmonyhubjs-discover": "^1.1.1",
+    "harmonyhubjs-discover": "git+https://github.com/unDemian/harmonyhubjs-discover.git",
     "node-persist": "^3.1.0"
   },
   "devDependencies": {
