@@ -1,5 +1,10 @@
 # Homebridge Personal plugin
 
-- Control USB Led strip via Harmony Hub
+HarmonyHub
 
+- USB Led strip
+- Dumb Air Purifier
 
+BroadLink RM mini 4
+
+- AC

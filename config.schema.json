@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "DemianHub",
+  "pluginAlias": "TheDemians",
   "pluginType": "platform",
   "singular": true,
   "schema": {
@@ -11,11 +11,11 @@
         "required": true,
         "default": "61991"
       },
-      "accessList": {
+      "harmonyAccessList": {
         "title": "Allowed Accessories",
         "type": "string",
         "required": true,
-        "default": "LED Strip"
+        "default": "LED Strip,Air Humidifier"
       }
     }
   }

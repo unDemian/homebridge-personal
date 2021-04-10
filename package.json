@@ -26,21 +26,34 @@
     "homebridge-plugin"
   ],
   "dependencies": {
+    "broadlinkjs-rm": "git+https://github.com/unDemian/broadlinkjs-rm.git",
     "harmony-websocket": "git+https://github.com/unDemian/harmony-websocket.git",
-    "harmonyhubjs-discover": "git+https://github.com/unDemian/harmonyhubjs-discover.git",
-    "node-persist": "^3.1.0"
+    "harmonyhubjs-discover": "git+https://github.com/unDemian/harmonyhubjs-discover.git"
   },
   "devDependencies": {
     "@types/node": "^14.14.6",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
     "eslint": "^7.13.0",
+    "eslint-config-prettier": "^7.1.0",
     "homebridge": "^1.2.3",
+    "husky": "^4.3.8",
+    "lint-staged": "^10.5.3",
     "nodemon": "^2.0.6",
+    "prettier": "2.2.1",
     "rimraf": "^3.0.2",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5"
   },
   "homepage": "https://github.com/unDemian/homebridge-personal#readme",
-  "author": "undemian"
+  "author": "undemian",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
+  }
 }
