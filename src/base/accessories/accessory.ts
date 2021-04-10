@@ -1,13 +1,13 @@
 /**
  * External dependencies
  */
-import { Service, PlatformAccessory } from "homebridge";
+import { Service, PlatformAccessory } from 'homebridge';
 
 /**
  * Internal dependencies
  */
-import { Platform } from "../../platform";
-import { Hub } from "../hub";
+import { Platform } from '../../platform';
+import { Hub } from '../hub';
 
 /**
  * Platform Accessory
@@ -18,7 +18,7 @@ export default class Accessory {
   constructor(
     public readonly platform: Platform,
     public readonly hub: Hub,
-    public readonly accessory: PlatformAccessory
+    public readonly accessory: PlatformAccessory,
   ) {
     const device = accessory.context.device;
     // set generic accessory information
@@ -31,6 +31,7 @@ export default class Accessory {
   }
 
   log = (...args) =>
-    this.platform.log.info(this.hub.name, this.accessory.context.device.name, "\x1b[35m[INFO]\x1b[0m", ...args);
+    this.platform.log.info(this.hub.name, this.accessory.context.device.name, '\x1b[35m[INFO]\x1b[0m', ...args);
+
   error = (...args) => this.platform.log.error(this.hub.name, this.accessory.context.device.name, ...args);
 }

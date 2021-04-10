@@ -7,14 +7,14 @@ import {
   CharacteristicValue,
   CharacteristicSetCallback,
   CharacteristicGetCallback,
-} from "homebridge";
+} from 'homebridge';
 
 /**
  * Internal dependencies
  */
-import { Platform } from "../../platform";
-import Accessory from "../../base/accessories/accessory";
-import { Hub } from "../../base/hub";
+import { Platform } from '../../platform';
+import Accessory from '../../base/accessories/accessory';
+import { Hub } from '../../base/hub';
 
 /**
  * Platform Accessory
@@ -42,14 +42,14 @@ export default class LedStrip extends Accessory {
 
     this.lightService
       .getCharacteristic(this.platform.Characteristic.On)
-      .on("get", this.getOn.bind(this))
-      .on("set", this.setOn.bind(this));
+      .on('get', this.getOn.bind(this))
+      .on('set', this.setOn.bind(this));
 
-    this.lightService.getCharacteristic(this.platform.Characteristic.Hue).on("set", this.setHue.bind(this));
+    this.lightService.getCharacteristic(this.platform.Characteristic.Hue).on('set', this.setHue.bind(this));
 
     this.lightService
       .getCharacteristic(this.platform.Characteristic.Saturation)
-      .on("set", this.setSaturation.bind(this));
+      .on('set', this.setSaturation.bind(this));
   }
 
   initialState() {
@@ -57,7 +57,7 @@ export default class LedStrip extends Accessory {
       context: { device },
     } = this.accessory;
     // force turnoff
-    const turnOff = { command: "Off", type: "IRCommand", deviceId: device.external.id };
+    const turnOff = { command: 'Off', type: 'IRCommand', deviceId: device.external.id };
     this.hub.sendData(turnOff);
   }
 
@@ -65,7 +65,7 @@ export default class LedStrip extends Accessory {
     // implement your own code to check if the device is on
     const isOn = this.state.On;
 
-    this.log("getOn", isOn);
+    this.log('getOn', isOn);
 
     // you must call the callback function
     // the first argument should be null if there were no errors
@@ -77,11 +77,11 @@ export default class LedStrip extends Accessory {
     const {
       context: { device },
     } = this.accessory;
-    this.log("setOn", value);
+    this.log('setOn', value);
 
-    let command = { command: "Off", type: "IRCommand", deviceId: device.external.id };
+    let command = { command: 'Off', type: 'IRCommand', deviceId: device.external.id };
     if (value) {
-      command = { command: "On", type: "IRCommand", deviceId: device.external.id };
+      command = { command: 'On', type: 'IRCommand', deviceId: device.external.id };
     }
 
     this.hub.sendData(command);
@@ -97,51 +97,51 @@ export default class LedStrip extends Accessory {
     const {
       context: { device },
     } = this.accessory;
-    this.log("setHue", value);
+    this.log('setHue', value);
     // implement your own code to set the brightness
     this.state.Hue = value as number;
 
-    let color = "Light9";
+    let color = 'Light9';
 
     switch (true) {
       case this.state.Saturation < 5:
         // white: ignore Hue
         this.state.Saturation = -1;
-        color = "a";
+        color = 'a';
         break;
 
       case this.state.Hue >= 40 && this.state.Hue < 70:
         // yellow
-        color = "Light7";
-        this.platform.log.info("yellow");
+        color = 'Light7';
+        this.platform.log.info('yellow');
         break;
 
       case (this.state.Hue >= 0 && this.state.Hue < 40) || (this.state.Hue >= 340 && this.state.Hue < 360):
         // red
-        color = "Light1";
-        this.platform.log.info("red");
+        color = 'Light1';
+        this.platform.log.info('red');
         break;
 
       case this.state.Hue >= 277 && this.state.Hue < 340:
         // violet
-        color = "Scene1";
-        this.platform.log.info("violet");
+        color = 'Scene1';
+        this.platform.log.info('violet');
         break;
 
       case this.state.Hue >= 164 && this.state.Hue < 277:
         // blue
-        color = "Light10";
-        this.platform.log.info("blue");
+        color = 'Light10';
+        this.platform.log.info('blue');
         break;
 
       case this.state.Hue >= 70 && this.state.Hue < 164:
         // green
-        color = "Light2";
-        this.platform.log.info("green");
+        color = 'Light2';
+        this.platform.log.info('green');
         break;
     }
 
-    const command = { command: color, type: "IRCommand", deviceId: device.external.id };
+    const command = { command: color, type: 'IRCommand', deviceId: device.external.id };
     this.hub.sendData(command);
 
     // you must call the callback function
@@ -149,7 +149,7 @@ export default class LedStrip extends Accessory {
   }
 
   setSaturation(value: CharacteristicValue, callback: CharacteristicSetCallback) {
-    this.log("setSaturation", value);
+    this.log('setSaturation', value);
 
     // implement your own code to set the brightness
     this.state.Saturation = value as number;

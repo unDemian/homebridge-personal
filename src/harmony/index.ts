@@ -1,29 +1,29 @@
 /**
  * External dependencies
  */
-import HarmonyHubDiscover from "harmonyhubjs-discover";
-import HarmonyWebSocket from "harmony-websocket";
+import HarmonyHubDiscover from 'harmonyhubjs-discover';
+import HarmonyWebSocket from 'harmony-websocket';
 
 /**
  * Internal dependencies
  */
-import LedStrip from "../harmony/accessories/led-strip";
-import AirHumidifier from "../harmony/accessories/air-humidifier";
-import { Platform } from "../platform";
-import { Hub } from "../base/hub";
+import LedStrip from '../harmony/accessories/led-strip';
+import AirHumidifier from '../harmony/accessories/air-humidifier';
+import { Platform } from '../platform';
+import { Hub } from '../base/hub';
 
 export class Harmony extends Hub {
   constructor(platform: Platform) {
     super(platform);
 
-    this.name = "Harmony";
+    this.name = 'Harmony';
     this.accessoryMapping = {
-      "light-controller": LedStrip,
-      "air-humidifer": AirHumidifier,
+      'light-controller': LedStrip,
+      'air-humidifer': AirHumidifier,
     };
 
     if (!this.platform.config.harmony) {
-      this.error("harmony configuration is required");
+      this.error('harmony configuration is required');
       return;
     }
 
@@ -32,26 +32,26 @@ export class Harmony extends Hub {
 
   discoverHubs = () => {
     if (!this.platform.config.harmony.settings.port) {
-      return this.error("port parameter is missing");
+      return this.error('port parameter is missing');
     }
 
-    this.log("Hub discovery started");
+    this.log('Hub discovery started');
 
     const discover = new HarmonyHubDiscover(this.platform.config.harmony.settings.port);
-    discover.on("online", this.hubDiscovered);
-    discover.on("offline", (hub) => {
+    discover.on('online', this.hubDiscovered);
+    discover.on('offline', (hub) => {
       // Triggered when a hub disappeared
-      this.log("lost " + hub.ip);
+      this.log('lost ' + hub.ip);
     });
 
-    discover.on("update", (hubs) => {
+    discover.on('update', (hubs) => {
       // Combines the online & update events by returning an array with all known
       // hubs for ease of use.
       const knownHubIps = hubs.reduce((prev, hub) => {
-        return prev + (prev.length > 0 ? ", " : "") + hub.ip;
-      }, "");
+        return prev + (prev.length > 0 ? ', ' : '') + hub.ip;
+      }, '');
 
-      this.log("known ips: " + knownHubIps);
+      this.log('known ips: ' + knownHubIps);
     });
     discover.start();
   };
@@ -64,9 +64,9 @@ export class Harmony extends Hub {
   };
 
   discoverDevices = () => {
-    this.log("Device discovery started");
+    this.log('Device discovery started');
     if (!this.platform.config.harmony.accessories) {
-      this.error("accessories configuration is required");
+      this.error('accessories configuration is required');
       return;
     }
 
@@ -81,11 +81,11 @@ export class Harmony extends Hub {
   };
 
   devicesDiscovered = (devices) => {
-    this.log("Devices discovered.");
+    this.log('Devices discovered.');
 
     for (const accessory of this.platform.config.harmony.accessories) {
       if (!accessory || !accessory.name) {
-        this.error("accessory item has no name field");
+        this.error('accessory item has no name field');
         return;
       }
 
@@ -94,12 +94,12 @@ export class Harmony extends Hub {
       }
 
       if (!accessory.type) {
-        this.error(accessory.name + " accessory field should be populated");
+        this.error(accessory.name + ' accessory field should be populated');
         return;
       }
 
       if (!this.accessoryMapping[accessory.type]) {
-        this.error(accessory.name + " is not supported");
+        this.error(accessory.name + ' is not supported');
         return;
       }
 
@@ -114,7 +114,7 @@ export class Harmony extends Hub {
       if (matchedDevice) {
         this.deviceDiscovered(this.transformDevice(accessory, matchedDevice));
       } else {
-        this.error(accessory.name + " not found.");
+        this.error(accessory.name + ' not found.');
       }
     }
   };

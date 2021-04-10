@@ -1,14 +1,14 @@
 /**
  * External dependencies
  */
-import { Service, PlatformAccessory } from "homebridge";
+import { Service, PlatformAccessory } from 'homebridge';
 
 /**
  * Internal dependencies
  */
-import { Platform } from "../../platform";
-import Accessory from "../../base/accessories/accessory";
-import { Hub } from "../../base/hub";
+import { Platform } from '../../platform';
+import Accessory from '../../base/accessories/accessory';
+import { Hub } from '../../base/hub';
 
 /**
  * Platform Accessory
@@ -25,7 +25,7 @@ export default class AirConditioner extends Accessory {
     const thermostatService = this.accessory.getService(this.platform.Service.Thermostat);
     this.thermostatService = thermostatService || this.accessory.addService(this.platform.Service.Thermostat);
 
-    this.thermostatService.setCharacteristic(this.platform.Characteristic.Name, "Thermostat");
+    this.thermostatService.setCharacteristic(this.platform.Characteristic.Name, 'Thermostat');
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.TemperatureDisplayUnits)
       .setProps({ validValues: [this.platform.Characteristic.TemperatureDisplayUnits.CELSIUS] })
@@ -39,8 +39,8 @@ export default class AirConditioner extends Accessory {
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.TargetTemperature)
       .setProps({ minStep: 1, minValue: 16, maxValue: 32 })
-      .on("get", this.getTemperature.bind(this))
-      .on("set", this.setTemperature.bind(this));
+      .on('get', this.getTemperature.bind(this))
+      .on('set', this.setTemperature.bind(this));
 
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.TargetHeatingCoolingState)
@@ -50,18 +50,18 @@ export default class AirConditioner extends Accessory {
           this.platform.Characteristic.TargetHeatingCoolingState.COOL,
         ],
       })
-      .on("get", this.getCoolingState.bind(this))
-      .on("set", this.setCoolingState.bind(this));
+      .on('get', this.getCoolingState.bind(this))
+      .on('set', this.setCoolingState.bind(this));
   }
 
   setTemperature(value, callback) {
-    this.log("setTemperature", value);
+    this.log('setTemperature', value);
     const {
       context: { device },
     } = this.accessory;
 
     if (!device.commands[`temperature${value}`]) {
-      this.error("Config temperature does not exist");
+      this.error('Config temperature does not exist');
     }
 
     this.hub.sendData(device.commands[`temperature${value}`]);
@@ -73,29 +73,29 @@ export default class AirConditioner extends Accessory {
   }
 
   getTemperature(callback) {
-    this.log("getTemperature", callback);
+    this.log('getTemperature', callback);
     // you must call the callback function
     callback(null, 0);
   }
 
   setCoolingState(value, callback) {
-    this.log("setCoolingState", value);
+    this.log('setCoolingState', value);
     const {
       context: { device },
     } = this.accessory;
 
-    if (!device.commands["off"]) {
-      this.error("Config temperature does not exist");
+    if (!device.commands['off']) {
+      this.error('Config temperature does not exist');
     }
 
     if (value === this.platform.Characteristic.TargetHeatingCoolingState.OFF) {
-      this.log("off");
-      this.hub.sendData(device.commands["off"]);
+      this.log('off');
+      this.hub.sendData(device.commands['off']);
       this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(0);
       this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(0);
     } else {
-      this.log("on");
-      this.hub.sendData(device.commands["temperature16"]);
+      this.log('on');
+      this.hub.sendData(device.commands['temperature16']);
       this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(16);
       this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(16);
     }
@@ -105,7 +105,7 @@ export default class AirConditioner extends Accessory {
   }
 
   getCoolingState(callback) {
-    this.log("getCoolingState", callback);
+    this.log('getCoolingState', callback);
     // you must call the callback function
     callback(null, this.platform.Characteristic.TargetHeatingCoolingState.OFF);
   }

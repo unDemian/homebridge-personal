@@ -11,13 +11,13 @@ import {
   Service,
   Characteristic,
   AccessoryConfig,
-} from "homebridge";
+} from 'homebridge';
 
 /**
  * Internal dependencies
  */
-import { Harmony } from "./harmony";
-import { Broadlink } from "./broadlink";
+import { Harmony } from './harmony';
+import { Broadlink } from './broadlink';
 
 /**
  * Types
@@ -65,7 +65,7 @@ export class Platform implements DynamicPlatformPlugin {
   public broadlink: Broadlink;
 
   constructor(public readonly log: Logger, public readonly config: PersonalConfig, public readonly api: API) {
-    this.log.info("Finished initializing platform:", this.config.name);
+    this.log.info('Finished initializing platform:', this.config.name);
 
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
     // Dynamic Platform plugins should only register new accessories after this event was fired,
@@ -83,7 +83,7 @@ export class Platform implements DynamicPlatformPlugin {
    * It should be used to setup event handlers for characteristics and update respective values.
    */
   configureAccessory(accessory: PlatformAccessory) {
-    this.log.info("Loading accessory from cache:", accessory.displayName);
+    this.log.info('Loading accessory from cache:', accessory.displayName);
 
     // add the restored accessory to the accessories cache so we can track if it has already been registered
     this.accessories.push(accessory);

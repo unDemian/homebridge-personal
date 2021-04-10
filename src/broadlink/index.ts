@@ -1,26 +1,26 @@
 /**
  * External dependencies
  */
-import broadlinkJS from "broadlinkjs-rm";
+import broadlinkJS from 'broadlinkjs-rm';
 
 /**
  * Internal dependencies
  */
-import { Platform } from "../platform";
-import { Hub } from "../base/hub";
-import AirConditioner from "./accessories/air-conditioner";
+import { Platform } from '../platform';
+import { Hub } from '../base/hub';
+import AirConditioner from './accessories/air-conditioner';
 
 export class Broadlink extends Hub {
   constructor(platform: Platform) {
     super(platform);
 
-    this.name = "BroadLink";
+    this.name = 'BroadLink';
     this.accessoryMapping = {
-      "air-conditioner": AirConditioner,
+      'air-conditioner': AirConditioner,
     };
 
     if (!this.platform.config.broadlink) {
-      this.error("broadlink configuration is required");
+      this.error('broadlink configuration is required');
       return;
     }
 
@@ -28,12 +28,12 @@ export class Broadlink extends Hub {
   }
 
   discoverHubs = () => {
-    this.log("Hub discovery started");
+    this.log('Hub discovery started');
 
     const broadlink = new broadlinkJS();
     broadlink.discover();
-    broadlink.on("deviceReady", this.hubDiscovered);
-    broadlink.on("error", this.log);
+    broadlink.on('deviceReady', this.hubDiscovered);
+    broadlink.on('error', this.log);
   };
 
   hubDiscovered = (hub) => {
@@ -44,15 +44,15 @@ export class Broadlink extends Hub {
   };
 
   discoverDevices = () => {
-    this.log("Device discovery started");
+    this.log('Device discovery started');
     if (!this.platform.config.broadlink.accessories) {
-      this.error("accessories configuration is required");
+      this.error('accessories configuration is required');
       return;
     }
 
     for (const accessory of this.platform.config.broadlink.accessories) {
       if (!accessory || !accessory.name) {
-        this.error("accessory item has no name field");
+        this.error('accessory item has no name field');
         return;
       }
 
@@ -61,12 +61,12 @@ export class Broadlink extends Hub {
       }
 
       if (!accessory.type) {
-        this.error(accessory.name + " accessory field should be populated");
+        this.error(accessory.name + ' accessory field should be populated');
         return;
       }
 
       if (!this.accessoryMapping[accessory.type]) {
-        this.error(accessory.name + " is not supported");
+        this.error(accessory.name + ' is not supported');
         return;
       }
 
@@ -75,7 +75,7 @@ export class Broadlink extends Hub {
   };
 
   sendData = (data) => {
-    const hexDataBuffer = new Buffer(data, "hex");
+    const hexDataBuffer = new Buffer(data, 'hex');
     this.connection.sendData(hexDataBuffer, false, data);
   };
 }

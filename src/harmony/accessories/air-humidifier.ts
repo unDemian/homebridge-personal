@@ -7,14 +7,14 @@ import {
   CharacteristicValue,
   CharacteristicSetCallback,
   CharacteristicGetCallback,
-} from "homebridge";
+} from 'homebridge';
 
 /**
  * Internal dependencies
  */
-import { Platform } from "../../platform";
-import Accessory from "../../base/accessories/accessory";
-import { Hub } from "../../base/hub";
+import { Platform } from '../../platform';
+import Accessory from '../../base/accessories/accessory';
+import { Hub } from '../../base/hub';
 
 /**
  * Platform Accessory
@@ -43,12 +43,12 @@ export default class AirHumidifier extends Accessory {
     const humidifierService = this.accessory.getService(this.platform.Service.HumidifierDehumidifier);
     this.humidifierService =
       humidifierService || this.accessory.addService(this.platform.Service.HumidifierDehumidifier);
-    this.humidifierService.setCharacteristic(this.platform.Characteristic.Name, "Purifier");
+    this.humidifierService.setCharacteristic(this.platform.Characteristic.Name, 'Purifier');
 
     this.humidifierService
       .getCharacteristic(this.platform.Characteristic.Active)
-      .on("get", this.getOn.bind(this))
-      .on("set", this.setOn.bind(this));
+      .on('get', this.getOn.bind(this))
+      .on('set', this.setOn.bind(this));
     //
     // this.humidifierService
     //   .getCharacteristic(this.platform.Characteristic.CurrentHumidifierDehumidifierState)
@@ -67,7 +67,7 @@ export default class AirHumidifier extends Accessory {
     // implement your own code to check if the device is on
     const isOn = this.state.On;
 
-    this.log("getOn", isOn);
+    this.log('getOn', isOn);
 
     // you must call the callback function
     // the first argument should be null if there were no errors
@@ -79,9 +79,9 @@ export default class AirHumidifier extends Accessory {
     const {
       context: { device },
     } = this.accessory;
-    this.log("setOn", value);
+    this.log('setOn', value);
 
-    const command = { command: "PowerToggle", type: "IRCommand", deviceId: device.external.id };
+    const command = { command: 'PowerToggle', type: 'IRCommand', deviceId: device.external.id };
     this.hub.sendData(command);
 
     // implement your own code to turn your device on/off

@@ -1,8 +1,8 @@
 /**
  * Internal dependencies
  */
-import { PLATFORM_NAME, PLUGIN_NAME } from "../settings";
-import { PersonalAccessory, Platform } from "../platform";
+import { PLATFORM_NAME, PLUGIN_NAME } from '../settings';
+import { PersonalAccessory, Platform } from '../platform';
 
 export abstract class Hub {
   public name: string;
@@ -21,7 +21,7 @@ export abstract class Hub {
   };
 
   deviceDiscovered = (device) => {
-    this.log("Device discovered", device.name);
+    this.log('Device discovered', device.name);
     this.registerDevice(device);
   };
 
@@ -33,7 +33,7 @@ export abstract class Hub {
     const deviceClass = this.accessoryMapping[device.type];
 
     if (!deviceClass) {
-      return this.error("Unsupported device type " + device.type);
+      return this.error('Unsupported device type ' + device.type);
     }
 
     // generate a unique id for the accessory this should be generated from
@@ -48,7 +48,7 @@ export abstract class Hub {
     if (existingAccessory) {
       // the accessory already exists
       if (device) {
-        this.log("Restoring existing accessory from cache:", existingAccessory.displayName);
+        this.log('Restoring existing accessory from cache:', existingAccessory.displayName);
 
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
         // existingAccessory.context.device = device;
@@ -61,11 +61,11 @@ export abstract class Hub {
         // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
         // remove platform accessories when no longer present
         this.platform.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
-        this.log("Removing existing accessory from cache:", existingAccessory.displayName);
+        this.log('Removing existing accessory from cache:', existingAccessory.displayName);
       }
     } else {
       // the accessory does not yet exist, so we need to create it
-      this.log("Adding new accessory:", device.name);
+      this.log('Adding new accessory:', device.name);
 
       // create a new accessory
       const accessory = new this.platform.api.platformAccessory(device.name, uuid);
@@ -80,6 +80,7 @@ export abstract class Hub {
       this.platform.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
     }
   };
-  log = (...args) => this.platform.log.info(this.name, "\x1b[35m[INFO]\x1b[0m", ...args);
+
+  log = (...args) => this.platform.log.info(this.name, '\x1b[35m[INFO]\x1b[0m', ...args);
   error = (...args) => this.platform.log.error(this.name, ...args);
 }
