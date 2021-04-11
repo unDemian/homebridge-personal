@@ -25,7 +25,7 @@ export default class AirConditioner extends Accessory {
     const thermostatService = this.accessory.getService(this.platform.Service.Thermostat);
     this.thermostatService = thermostatService || this.accessory.addService(this.platform.Service.Thermostat);
 
-    this.thermostatService.setCharacteristic(this.platform.Characteristic.Name, 'Thermostat');
+    this.thermostatService.setCharacteristic(this.platform.Characteristic.Name, 'AC');
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.TemperatureDisplayUnits)
       .setProps({ validValues: [this.platform.Characteristic.TemperatureDisplayUnits.CELSIUS] })
@@ -89,15 +89,13 @@ export default class AirConditioner extends Accessory {
     }
 
     if (value === this.platform.Characteristic.TargetHeatingCoolingState.OFF) {
-      this.log('off');
-      this.hub.sendData(device.commands['off']);
       this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(0);
       this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(0);
+      this.hub.sendData(device.commands['off']);
     } else {
-      this.log('on');
-      this.hub.sendData(device.commands['temperature16']);
       this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(16);
       this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(16);
+      this.hub.sendData(device.commands['temperature16']);
     }
 
     // you must call the callback function
