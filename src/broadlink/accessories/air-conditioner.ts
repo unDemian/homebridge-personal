@@ -89,8 +89,8 @@ export default class AirConditioner extends Accessory {
     }
 
     if (value === this.platform.Characteristic.TargetHeatingCoolingState.OFF) {
-      this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(0);
-      this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(0);
+      this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(16);
+      this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(16);
       this.hub.sendData(device.commands['off']);
     } else {
       this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(16);
