@@ -2,21 +2,5 @@
   "pluginAlias": "TheDemians",
   "pluginType": "platform",
   "singular": true,
-  "schema": {
-    "type": "object",
-    "properties": {
-      "port": {
-        "title": "Harmony Hub Port",
-        "type": "integer",
-        "required": true,
-        "default": "61991"
-      },
-      "harmonyAccessList": {
-        "title": "Allowed Accessories",
-        "type": "string",
-        "required": true,
-        "default": "LED Strip,Air Humidifier"
-      }
-    }
-  }
+  "schema": {}
 }

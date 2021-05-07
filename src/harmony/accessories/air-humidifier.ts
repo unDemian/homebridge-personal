@@ -30,7 +30,7 @@ export default class AirHumidifier extends Accessory {
    * You should implement your own code to track the state of your accessory
    */
   private state = {
-    On: false,
+    Active: true,
     // Mode: this.platform.Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING,
     // Power: this.platform.Characteristic.SwingMode.SWING_DISABLED,
     // Color: this.platform.Characteristic.RotationSpeed,
@@ -47,8 +47,7 @@ export default class AirHumidifier extends Accessory {
 
     this.humidifierService
       .getCharacteristic(this.platform.Characteristic.Active)
-      .on('get', this.getOn.bind(this))
-      .on('set', this.setOn.bind(this));
+      .on('set', this.setActive.bind(this));
     //
     // this.humidifierService
     //   .getCharacteristic(this.platform.Characteristic.CurrentHumidifierDehumidifierState)
@@ -63,29 +62,17 @@ export default class AirHumidifier extends Accessory {
     //   .on("set", this.setOn.bind(this));
   }
 
-  getOn(callback: CharacteristicGetCallback) {
-    // implement your own code to check if the device is on
-    const isOn = this.state.On;
-
-    this.log('getOn', isOn);
-
-    // you must call the callback function
-    // the first argument should be null if there were no errors
-    // the second argument should be the value to return
-    callback(null, isOn);
-  }
-
-  setOn(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+  setActive(value: CharacteristicValue, callback: CharacteristicSetCallback) {
     const {
       context: { device },
     } = this.accessory;
-    this.log('setOn', value);
+    this.log('setActive', value);
 
     const command = { command: 'PowerToggle', type: 'IRCommand', deviceId: device.external.id };
     this.hub.sendData(command);
 
     // implement your own code to turn your device on/off
-    this.state.On = value as boolean;
+    this.state.Active = value as boolean;
 
     // you must call the callback function
     callback(null);

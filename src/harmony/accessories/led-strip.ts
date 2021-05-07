@@ -42,7 +42,6 @@ export default class LedStrip extends Accessory {
 
     this.lightService
       .getCharacteristic(this.platform.Characteristic.On)
-      .on('get', this.getOn.bind(this))
       .on('set', this.setOn.bind(this));
 
     this.lightService.getCharacteristic(this.platform.Characteristic.Hue).on('set', this.setHue.bind(this));
@@ -59,18 +58,6 @@ export default class LedStrip extends Accessory {
     // force turnoff
     const turnOff = { command: 'Off', type: 'IRCommand', deviceId: device.external.id };
     this.hub.sendData(turnOff);
-  }
-
-  getOn(callback: CharacteristicGetCallback) {
-    // implement your own code to check if the device is on
-    const isOn = this.state.On;
-
-    this.log('getOn', isOn);
-
-    // you must call the callback function
-    // the first argument should be null if there were no errors
-    // the second argument should be the value to return
-    callback(null, isOn);
   }
 
   setOn(value: CharacteristicValue, callback: CharacteristicSetCallback) {
