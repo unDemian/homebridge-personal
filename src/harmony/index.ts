@@ -58,6 +58,12 @@ export class Harmony extends Hub {
 
   hubDiscovered = (hub) => {
     this.log(`Hub discovered ${hub.ip}`);
+
+    if ( ! hub || ! hub.id ) {
+      this.error('Discovered hub malformed' + JSON.stringify(hub));
+      return;
+    }
+
     this.connection = hub;
 
     this.discoverDevices();
