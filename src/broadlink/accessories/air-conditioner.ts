@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { Service, PlatformAccessory } from 'homebridge';
+import {Service, PlatformAccessory, CharacteristicValue} from 'homebridge';
 
 /**
  * Internal dependencies
@@ -18,6 +18,10 @@ import { Hub } from '../../base/hub';
 export default class AirConditioner extends Accessory {
   public thermostatService: Service;
 
+  private state = {
+    cooling: this.platform.Characteristic.TargetHeatingCoolingState.OFF,
+  };
+
   constructor(platform: Platform, hub: Hub, accessory: PlatformAccessory) {
     super(platform, hub, accessory);
 
@@ -31,7 +35,7 @@ export default class AirConditioner extends Accessory {
       .setProps({ validValues: [this.platform.Characteristic.TemperatureDisplayUnits.CELSIUS] })
       .setValue(this.platform.Characteristic.TemperatureDisplayUnits.CELSIUS);
 
-    this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(0);
+    this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(16);
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.CurrentHeatingCoolingState)
       .setValue(this.platform.Characteristic.CurrentHeatingCoolingState.OFF);
@@ -50,8 +54,8 @@ export default class AirConditioner extends Accessory {
           this.platform.Characteristic.TargetHeatingCoolingState.COOL,
         ],
       })
-      .on('get', this.getCoolingState.bind(this))
-      .on('set', this.setCoolingState.bind(this));
+      .onGet(this.getCoolingState.bind(this))
+      .onSet(this.setCoolingState.bind(this));
   }
 
   setTemperature(value, callback) {
@@ -78,7 +82,7 @@ export default class AirConditioner extends Accessory {
     callback(null, 0);
   }
 
-  setCoolingState(value, callback) {
+  async setCoolingState(value) {
     this.log('setCoolingState', value);
     const {
       context: { device },
@@ -98,13 +102,15 @@ export default class AirConditioner extends Accessory {
       this.hub.sendData(device.commands['temperature16']);
     }
 
-    // you must call the callback function
-    callback(null);
+    this.state.cooling = value;
   }
 
-  getCoolingState(callback) {
-    this.log('getCoolingState', callback);
-    // you must call the callback function
-    callback(null, this.platform.Characteristic.TargetHeatingCoolingState.OFF);
+  async getCoolingState(): Promise<CharacteristicValue> {
+    // implement your own code to check if the device is on
+    const cooling = this.state.cooling;
+
+    this.platform.log.debug('getCoolingState', cooling);
+
+    return cooling;
   }
 }

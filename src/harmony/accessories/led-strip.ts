@@ -42,7 +42,8 @@ export default class LedStrip extends Accessory {
 
     this.lightService
       .getCharacteristic(this.platform.Characteristic.On)
-      .on('set', this.setOn.bind(this));
+      .onGet(this.getOn.bind(this))
+      .onSet(this.setOn.bind(this));
 
     this.lightService.getCharacteristic(this.platform.Characteristic.Hue).on('set', this.setHue.bind(this));
 
@@ -60,7 +61,16 @@ export default class LedStrip extends Accessory {
     this.hub.sendData(turnOff);
   }
 
-  setOn(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+  async getOn(): Promise<CharacteristicValue> {
+    // implement your own code to check if the device is on
+    const isOn = this.state.On;
+
+    this.log('getOn', isOn);
+
+    return isOn;
+  }
+
+  async setOn(value: CharacteristicValue) {
     const {
       context: { device },
     } = this.accessory;
@@ -75,9 +85,6 @@ export default class LedStrip extends Accessory {
 
     // implement your own code to turn your device on/off
     this.state.On = value as boolean;
-
-    // you must call the callback function
-    callback(null);
   }
 
   setHue(value: CharacteristicValue, callback: CharacteristicSetCallback) {

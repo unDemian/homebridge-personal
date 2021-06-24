@@ -47,7 +47,8 @@ export default class AirHumidifier extends Accessory {
 
     this.humidifierService
       .getCharacteristic(this.platform.Characteristic.Active)
-      .on('set', this.setActive.bind(this));
+      .onGet(this.getActive.bind(this))
+      .onSet(this.setActive.bind(this));
     //
     // this.humidifierService
     //   .getCharacteristic(this.platform.Characteristic.CurrentHumidifierDehumidifierState)
@@ -62,7 +63,16 @@ export default class AirHumidifier extends Accessory {
     //   .on("set", this.setOn.bind(this));
   }
 
-  setActive(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+  async getActive(): Promise<CharacteristicValue> {
+    // implement your own code to check if the device is on
+    const isOn = this.state.Active;
+
+    this.log('getActive', isOn);
+
+    return isOn;
+  }
+
+  async setActive(value: CharacteristicValue) {
     const {
       context: { device },
     } = this.accessory;
@@ -73,8 +83,5 @@ export default class AirHumidifier extends Accessory {
 
     // implement your own code to turn your device on/off
     this.state.Active = value as boolean;
-
-    // you must call the callback function
-    callback(null);
   }
 }
