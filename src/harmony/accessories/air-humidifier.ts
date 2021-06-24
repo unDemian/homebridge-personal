@@ -30,7 +30,7 @@ export default class AirHumidifier extends Accessory {
    * You should implement your own code to track the state of your accessory
    */
   private state = {
-    Active: true,
+    Active: false,
     // Mode: this.platform.Characteristic.CurrentHumidifierDehumidifierState.HUMIDIFYING,
     // Power: this.platform.Characteristic.SwingMode.SWING_DISABLED,
     // Color: this.platform.Characteristic.RotationSpeed,
