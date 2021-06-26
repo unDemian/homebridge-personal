@@ -20,6 +20,7 @@ export default class AirConditioner extends Accessory {
 
   private state = {
     cooling: this.platform.Characteristic.TargetHeatingCoolingState.OFF,
+    temperature: 16,
   };
 
   constructor(platform: Platform, hub: Hub, accessory: PlatformAccessory) {
@@ -43,8 +44,8 @@ export default class AirConditioner extends Accessory {
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.TargetTemperature)
       .setProps({ minStep: 1, minValue: 16, maxValue: 32 })
-      .on('get', this.getTemperature.bind(this))
-      .on('set', this.setTemperature.bind(this));
+      .onGet(this.getTemperature.bind(this))
+      .onSet(this.setTemperature.bind(this));
 
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.TargetHeatingCoolingState)
@@ -58,7 +59,7 @@ export default class AirConditioner extends Accessory {
       .onSet(this.setCoolingState.bind(this));
   }
 
-  setTemperature(value, callback) {
+  async setTemperature(value) {
     this.log('setTemperature', value);
     const {
       context: { device },
@@ -68,18 +69,23 @@ export default class AirConditioner extends Accessory {
       this.error('Config temperature does not exist');
     }
 
+    if ( this.state.cooling === this.platform.Characteristic.TargetHeatingCoolingState.OFF ) {
+      this.log('it seems it is off, bail');
+      return;
+    }
+
     this.hub.sendData(device.commands[`temperature${value}`]);
 
     this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(value);
-
-    // you must call the callback function
-    callback(null);
+    this.state.temperature = value;
   }
 
-  getTemperature(callback) {
-    this.log('getTemperature', callback);
-    // you must call the callback function
-    callback(null, 0);
+  async getTemperature(): Promise<CharacteristicValue> {
+    const temperature = this.state.temperature;
+
+    this.platform.log.debug('getTemperature', temperature);
+
+    return temperature;
   }
 
   async setCoolingState(value) {
@@ -93,20 +99,25 @@ export default class AirConditioner extends Accessory {
     }
 
     if (value === this.platform.Characteristic.TargetHeatingCoolingState.OFF) {
-      this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(16);
-      this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(16);
+      if ( this.state.cooling === this.platform.Characteristic.TargetHeatingCoolingState.OFF ) {
+        this.log('Already off, bail');
+      }
+      this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(this.state.temperature);
+      this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(this.state.temperature);
       this.hub.sendData(device.commands['off']);
     } else {
-      this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(16);
-      this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(16);
-      this.hub.sendData(device.commands['temperature16']);
+      if ( this.state.cooling === this.platform.Characteristic.TargetHeatingCoolingState.COOL ) {
+        this.log('Already cooling, bail');
+      }
+      this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(this.state.temperature);
+      this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(this.state.temperature);
+      this.hub.sendData(device.commands['temperature' + this.state.temperature]);
     }
 
     this.state.cooling = value;
   }
 
   async getCoolingState(): Promise<CharacteristicValue> {
-    // implement your own code to check if the device is on
     const cooling = this.state.cooling;
 
     this.platform.log.debug('getCoolingState', cooling);
