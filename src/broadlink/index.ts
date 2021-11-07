@@ -74,6 +74,10 @@ export class Broadlink extends Hub {
     }
   };
 
+  getCommands = (deviceId: string): Promise<[]> => {
+    return Promise.resolve([]);
+  };
+
   sendData = (data) => {
     const hexDataBuffer = new Buffer(data, 'hex');
     this.connection.sendData(hexDataBuffer, false, data);

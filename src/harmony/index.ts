@@ -9,6 +9,8 @@ import HarmonyWebSocket from 'harmony-websocket';
  */
 import LedStrip from '../harmony/accessories/led-strip';
 import AirHumidifier from '../harmony/accessories/air-humidifier';
+import AVDenon from '../harmony/accessories/av-denon';
+import TV from '../harmony/accessories/tv';
 import { Platform } from '../platform';
 import { Hub } from '../base/hub';
 
@@ -20,6 +22,8 @@ export class Harmony extends Hub {
     this.accessoryMapping = {
       'light-controller': LedStrip,
       'air-humidifer': AirHumidifier,
+      'av-controller': AVDenon,
+      'tv-controller': TV,
     };
 
     if (!this.platform.config.harmony) {
@@ -59,7 +63,7 @@ export class Harmony extends Hub {
   hubDiscovered = (hub) => {
     this.log(`Hub discovered ${hub.ip}`);
 
-    if ( ! hub || ! hub.ip ) {
+    if (!hub || !hub.ip) {
       this.error('Discovered hub malformed' + JSON.stringify(hub));
       return;
     }

@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import {Service, PlatformAccessory, CharacteristicValue} from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
 
 /**
  * Internal dependencies
@@ -69,7 +69,7 @@ export default class AirConditioner extends Accessory {
       this.error('Config temperature does not exist');
     }
 
-    if ( this.state.cooling === this.platform.Characteristic.TargetHeatingCoolingState.OFF ) {
+    if (this.state.cooling === this.platform.Characteristic.TargetHeatingCoolingState.OFF) {
       this.log('it seems it is off, bail');
       return;
     }
@@ -99,18 +99,26 @@ export default class AirConditioner extends Accessory {
     }
 
     if (value === this.platform.Characteristic.TargetHeatingCoolingState.OFF) {
-      if ( this.state.cooling === this.platform.Characteristic.TargetHeatingCoolingState.OFF ) {
+      if (this.state.cooling === this.platform.Characteristic.TargetHeatingCoolingState.OFF) {
         this.log('Already off, bail');
       }
-      this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(this.state.temperature);
-      this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(this.state.temperature);
+      this.thermostatService
+        .getCharacteristic(this.platform.Characteristic.TargetTemperature)
+        .setValue(this.state.temperature);
+      this.thermostatService
+        .getCharacteristic(this.platform.Characteristic.CurrentTemperature)
+        .setValue(this.state.temperature);
       this.hub.sendData(device.commands['off']);
     } else {
-      if ( this.state.cooling === this.platform.Characteristic.TargetHeatingCoolingState.COOL ) {
+      if (this.state.cooling === this.platform.Characteristic.TargetHeatingCoolingState.COOL) {
         this.log('Already cooling, bail');
       }
-      this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature).setValue(this.state.temperature);
-      this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).setValue(this.state.temperature);
+      this.thermostatService
+        .getCharacteristic(this.platform.Characteristic.TargetTemperature)
+        .setValue(this.state.temperature);
+      this.thermostatService
+        .getCharacteristic(this.platform.Characteristic.CurrentTemperature)
+        .setValue(this.state.temperature);
       this.hub.sendData(device.commands['temperature' + this.state.temperature]);
     }
 

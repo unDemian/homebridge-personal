@@ -15,6 +15,7 @@ export abstract class Hub {
   abstract hubDiscovered(hub): void;
   abstract discoverDevices(): void;
   abstract sendData(data): void;
+  abstract getCommands(deviceId: string): Promise<[]>;
 
   devicesDiscovered = (devices) => {
     return devices;
@@ -76,8 +77,10 @@ export abstract class Hub {
 
       new deviceClass(this.platform, this, accessory);
 
-      // link the accessory to your platform
-      this.platform.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+      // link the accessory to your platform, if it is not a TV
+      if (!['tv-controller', 'av-controller'].includes(device.type)) {
+        this.platform.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+      }
     }
   };
 
